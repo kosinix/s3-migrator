@@ -3,13 +3,17 @@
  */
 
 //// Core modules
+const process = require('process')
 
 //// External modules
 const { S3Client, CopyObjectCommand, ListObjectsCommand, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 
 //// Modules
+const get = require('./src/get')
 const { client1, client2 } = require('./src/clients')
 const { migrate, downloadObjects, deleteObjects } = require('./src/helpers')
+
+const MaxKeys = get(process, 'env.MaxKeys', 2)
 
     ;
 (async () => {
@@ -18,7 +22,7 @@ const { migrate, downloadObjects, deleteObjects } = require('./src/helpers')
         let objects = await downloadObjects(client1, new ListObjectsCommand({
             Bucket: 'codefleet-hris-storage',
             Prefix: 'files-dev',
-            MaxKeys: 2
+            MaxKeys: MaxKeys
         }))
         // console.log('objects:', objects)
         let results = await migrate(objects, client2, {
