@@ -23,43 +23,57 @@ module.exports = {
         let objects = get(data, 'Contents', []).filter((o) => {
             return o.Size > 0
         })
+        let promises = []
         for (let x = 0; x < objects.length; x++) {
             let object = objects[x]
             object.Bucket = command.input.Bucket
-            let result = await client.send(
+            let result = client.send(
                 new GetObjectCommand({
                     Bucket: object.Bucket,
                     Key: object.Key,
                 })
             )
-            object.Buffer = result.Body
-            if (object.Buffer) {
-                object.Buffer = await streamToBuffer(object.Buffer)
-            }
-    
+            promises.push(result)
         }
+        let results = await Promise.all(promises)
+
+        for (let x = 0; x < results.length; x++) {
+            let result = results[x]
+            objects[x].Buffer = result.Body
+            if (objects[x].Buffer) {
+                objects[x].Buffer = await streamToBuffer(objects[x].Buffer)
+            }
+        }
+
         // Return objects from ListObjectCommand with prop Bucket, Buffer added
         return objects
     },
     deleteObjects: async (client, objects) => {
         let responses = []
+        let promises = []
         for (let x = 0; x < objects.length; x++) {
             let object = objects[x]
-            let result =await client.send(
+            let result = client.send(
                 new DeleteObjectCommand({
                     Bucket: object.Bucket,
                     Key: object.Key
                 })
             )
+            promises.push(result)
+
+        }
+        let results = await Promise.all(promises)
+        for (let x = 0; x < results.length; x++) {
+            let object = objects[x]
             responses.push({
                 deleted: `${object.Bucket}/${object.Key}`,
-                result: result,
+                result: results[x],
             })
         }
         return responses
     },
     migrate: async (objects, client, options) => {
-    
+
         let results = []
         for (let x = 0; x < objects.length; x++) {
             let object = objects[x]
