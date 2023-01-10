@@ -34,8 +34,8 @@ const BUCKET2 = get(process, 'env.BUCKET2', 'hris-gsu-ph')
         })
         console.log('migrated:', results)
 
-        results = await deleteObjects(client1, objects)
-        console.log('results:', results)
+        // results = await deleteObjects(client1, objects)
+        // console.log('results:', results)
 
     } catch (err) {
         console.log(err)
