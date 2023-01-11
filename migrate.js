@@ -17,6 +17,7 @@ const { migrate, downloadObjects, deleteObjects } = require('./src/helpers')
 const BUCKET1 = get(process, 'env.BUCKET1', 'codefleet-hris-storage')
 const PREFIX1 = get(process, 'env.PREFIX1', 'files-live')
 const MAX_KEYS = get(process, 'env.MAX_KEYS', 2)
+const MARKER = get(process, 'env.MARKER', '')
 const BUCKET2 = get(process, 'env.BUCKET2', 'hris-gsu-ph')
 
 
@@ -32,6 +33,7 @@ const BUCKET2 = get(process, 'env.BUCKET2', 'hris-gsu-ph')
         let objects = await downloadObjects(client1, new ListObjectsCommand({
             Bucket: BUCKET1,
             Prefix: PREFIX1,
+            Marker: MARKER,
             MaxKeys: MAX_KEYS
         }))
 
