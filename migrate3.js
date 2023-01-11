@@ -3,7 +3,6 @@
  */
 
 //// Core modules
-const fs = require('fs')
 const process = require('process')
 
 //// External modules
@@ -22,46 +21,24 @@ const BUCKET2 = get(process, 'env.BUCKET2', 'hris-gsu-ph')
 
     ;
 (async () => {
-    let stream = null
     try {
-        const fileName = `${Date.now()}.log`
 
-        stream = fs.createWriteStream(fileName, { flags: 'a' })
-
-        let counter = 0
         let objects = await downloadObjects(client1, new ListObjectsCommand({
             Bucket: BUCKET1,
             Prefix: PREFIX1,
             MaxKeys: MAX_KEYS
         }))
-
+        // console.log('objects:', objects)
         let results = await migrate(objects, client2, {
             Bucket: BUCKET2,
         })
-        stream.write(results.join("\n"))
-        counter += results.length
-        console.log(`${counter} objects migrated. See ${fileName}`)
-        while (objects.length > 0) {
-            let lastObj = objects.pop()
-            objects = await downloadObjects(client1, new ListObjectsCommand({
-                Bucket: BUCKET1,
-                Prefix: PREFIX1,
-                MaxKeys: MAX_KEYS,
-                Marker: lastObj.Key
-            }))
-            let results = await migrate(objects, client2, {
-                Bucket: BUCKET2,
-            })
-            stream.write("\n" + results.join("\n"))
-            counter += results.length
-            console.log(`${counter} objects migrated. See ${fileName}`)
-        }
-        stream.end()
+        console.log('migrated:', results)
+
+        results = await deleteObjects(client1, objects)
+        console.log('results:', results)
+
     } catch (err) {
         console.log(err)
     } finally {
-        if (stream) {
-            stream.end()
-        }
     }
 })()

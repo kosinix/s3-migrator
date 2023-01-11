@@ -22,6 +22,9 @@ module.exports = {
         let data = await client.send(command);
         let objects = get(data, 'Contents', []).filter((o) => {
             return o.Size > 0
+        }).map(o => {
+            o.Bucket = command.input.Bucket
+            return o
         })
         let promises = []
         for (let x = 0; x < objects.length; x++) {
@@ -90,10 +93,7 @@ module.exports = {
             //         Key: object.Key
             //     }
             // ))
-            results.push({
-                from: `${object.Bucket}/${object.Key}`,
-                to: `${options.Bucket}/${object.Key}`,
-            })
+            results.push(`${object.Bucket}/${object.Key} => ${options.Bucket}/${object.Key}`)
         }
         return results
     }
