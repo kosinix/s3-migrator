@@ -38,6 +38,8 @@ const BUCKET2 = get(process, 'env.BUCKET2', 'hris-gsu-ph')
         let results = await migrate(objects, client2, {
             Bucket: BUCKET2,
         })
+        await deleteObjects(client1, objects)
+
         stream.write(results.join("\n"))
         counter += results.length
         console.log(`${counter} objects migrated. See ${fileName}`)
@@ -52,6 +54,8 @@ const BUCKET2 = get(process, 'env.BUCKET2', 'hris-gsu-ph')
             let results = await migrate(objects, client2, {
                 Bucket: BUCKET2,
             })
+            await deleteObjects(client1, objects)
+
             stream.write("\n" + results.join("\n"))
             counter += results.length
             console.log(`${counter} objects migrated. See ${fileName}`)
