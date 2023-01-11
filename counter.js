@@ -29,7 +29,7 @@ const BUCKET2 = get(process, 'env.BUCKET2', 'hris-gsu-ph')
             MaxKeys: MAX_KEYS
         }))
         counter += objects.length
-        console.log(`${counter} objects`)
+        console.log(counter)
         while(objects.length > 0) {
             let lastObj = objects.pop()
             objects = await listObjects(client1, new ListObjectsCommand({
@@ -39,9 +39,7 @@ const BUCKET2 = get(process, 'env.BUCKET2', 'hris-gsu-ph')
                 Marker: lastObj.Key
             }))
             counter += objects.length
-            console.log(lastObj.Key)
-
-            console.log(`${counter} objects marker ${lastObj.Key}`)
+            console.log(counter, `last marker ${lastObj.Key}`)
         }
     } catch (err) {
         console.log(err)
