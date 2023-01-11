@@ -39,7 +39,7 @@ const BUCKET2 = get(process, 'env.BUCKET2', 'hris-gsu-ph')
                 Marker: lastObj.Key
             }))
             counter += objects.length
-            console.log(counter, `last marker ${lastObj.Key}`)
+            console.log(counter, `MARKER=${lastObj.Key}`)
         }
     } catch (err) {
         console.log(err)
