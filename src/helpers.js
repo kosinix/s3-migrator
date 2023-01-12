@@ -96,5 +96,12 @@ module.exports = {
             results.push(`${object.Bucket}/${object.Key} => ${options.Bucket}/${object.Key}`)
         }
         return results
+    },
+    toChunks: (array, chunkSize) => {
+        let chunks = []
+        for (let i = 0; i < array.length; i += chunkSize) {
+            chunks.push(array.slice(i, i + chunkSize))
+        }
+        return chunks
     }
 }
